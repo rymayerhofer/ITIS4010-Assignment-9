@@ -1,21 +1,49 @@
 import { Button } from "@/components/ui/button";
 import { useNumberPuzzle } from "@/lib/stores/useNumberPuzzle";
 import { useAudio } from "@/lib/stores/useAudio";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";
-import { Award, Trophy } from "lucide-react";
+import { Award, Trophy, Check } from "lucide-react";
 
 const WinModal = () => {
   const { moveCount, resetGame } = useNumberPuzzle();
   const { playSuccess } = useAudio();
   const { width, height } = useWindowSize();
+  const [statsSent, setStatsSent] = useState(false);
 
   // Play success sound when the modal appears
   useEffect(() => {
     playSuccess();
-  }, [playSuccess]);
+    
+    // Submit game stats to our serverless function
+    // This is just demonstration functionality for future analytics
+    const submitStats = async () => {
+      try {
+        const response = await fetch('/api/game-stats', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            moveCount,
+            rating: getScore(),
+            completedAt: new Date().toISOString(),
+          }),
+        });
+        
+        if (response.ok) {
+          setStatsSent(true);
+          console.log('Game stats submitted successfully');
+        }
+      } catch (error) {
+        console.log('Could not submit game stats');
+      }
+    };
+    
+    submitStats();
+  }, [playSuccess, moveCount]);
 
   // Calculate score based on moves (the fewer moves, the higher the score)
   const getScore = () => {
@@ -65,6 +93,13 @@ const WinModal = () => {
               </div>
               <p className="text-xl font-bold text-indigo-600">{getScore()}</p>
             </div>
+            
+            {statsSent && (
+              <div className="flex items-center justify-center gap-1 text-green-600 mb-4">
+                <Check className="h-4 w-4" />
+                <span className="text-sm">Your score has been recorded</span>
+              </div>
+            )}
             
             <Button
               onClick={resetGame}
