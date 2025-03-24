@@ -1,3 +1,4 @@
+git init
 # Dependencies
 node_modules
 .pnp
