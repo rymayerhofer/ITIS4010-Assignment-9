@@ -20,9 +20,9 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "shared"),
     },
   },
-  root: './',
+  root: path.resolve(__dirname, "client"),
   build: {
-    outDir: 'client/dist',
+    outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
   },
   // Add support for large models and audio files
