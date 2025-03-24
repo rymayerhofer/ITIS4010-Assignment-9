@@ -20,7 +20,7 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "shared"),
     },
   },
-  root: root: './',
+  root: './',
   build: {
     outDir: 'client/dist',
     emptyOutDir: true,
