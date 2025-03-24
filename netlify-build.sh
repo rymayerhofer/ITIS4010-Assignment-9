@@ -11,20 +11,23 @@ npm install --include=dev
 rm -rf dist
 mkdir -p dist
 
-# Update the vite config to output directly to dist
+# Build the client
 echo "Building client..."
-# Set outDir to ./dist instead of default ./dist/public
-VITE_BUILD_OUTDIR=dist npx vite build --outDir dist
+npx vite build
+
+# Reorganize the output files for Netlify
+echo "Reorganizing build output for Netlify..."
+# Move all files from dist/public to dist
+mv dist/public/* dist/
 
 # Copy asset directories that might be needed
-echo "Copying public assets..."
+echo "Copying additional public assets..."
 cp -r client/public/* dist/ || true
 
 # Prep for functions
 echo "Building serverless functions..."
 # Ensure netlify/functions directory exists
 mkdir -p netlify/functions
-cp -r netlify/functions/* netlify/functions/ || true
 
 # Create a simple redirects file for SPAs
 echo "/* /index.html 200" > dist/_redirects
